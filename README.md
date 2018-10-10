@@ -5,7 +5,11 @@ of your choice.
 
 ## Installation
 
-Download the nuget package
+*Package Manager*
+```Install-Package Gatherer -Version 1.0.0```
+
+*dotnet CLI*
+```dotnet add package Gatherer --version 1.0.0```
 
 ## Example Usage
 
