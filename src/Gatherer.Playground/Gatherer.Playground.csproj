@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ninject" Version="3.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Gatherer.Core\Gatherer.Core.csproj" />
+    <ProjectReference Include="..\Gatherer.Playground.Interfaces\Gatherer.Playground.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>
