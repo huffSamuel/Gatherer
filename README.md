@@ -17,9 +17,9 @@ of your choice.
 
 See the included Gatherer.Playground projects or insert this code snippet into your project
 
-```
+```c#
 var gatherer = new Gatherer();
-gatherer.LoadAll();
+var harvested = gatherer.LoadAll();
 ```
 Gatherer also offers a number of fluent methods for customizing the way Gatherer loads plugins.
 
