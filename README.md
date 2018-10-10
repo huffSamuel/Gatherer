@@ -1,5 +1,5 @@
 # Gatherer
-Gatherer is a lightweight plugin loading framework for .NET Core. Unopinionated and unbiased, this framework
+Gatherer is a lightweight plugin loading framework for .NET Standard. Unopinionated and unbiased, this framework
 simply loads the types in the folders you declare. It is up to you to inject these loaded types into the IoC
 of your choice.
 
