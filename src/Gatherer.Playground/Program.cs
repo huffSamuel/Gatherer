@@ -3,6 +3,8 @@ using Ninject;
 using System;
 using PLoader.Playground.Interfaces;
 using System.Linq;
+using System.Reflection;
+using System.IO;
 
 namespace PLoader.Playground
 {
@@ -11,6 +13,7 @@ namespace PLoader.Playground
         static void Main(string[] args)
         {
             var l = new Gatherer()
+                .From(new DirectoryInfo(Assembly.GetExecutingAssembly().Location))
                 .WithDiagnosticTiming()
                 .WithVerboseLogging()
                 .WithLogger(x => Console.WriteLine(x));

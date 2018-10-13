@@ -25,6 +25,11 @@ Gatherer also offers a number of fluent methods for customizing the way Gatherer
 
 ## Change Log
 
+### Version 1.1.1
++ Remove opinionated ReflectionTypeLoadException handling when loading types. Now defaults to logging the LoaderExceptions but can be overridden by calling SetTypeLoadExceptionHandler(Action<ReflectionTypeLoadException>).
++ Move const strings to resource file for localization.
++ Removed cruft.
+
 ### Version 1.1
 + Catch ReflectionTypeLoadExceptions when loading assemblies. No more manually handling.
 

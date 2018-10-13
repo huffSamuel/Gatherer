@@ -70,6 +70,15 @@ namespace Gather.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Completed load in {0}.
+        /// </summary>
+        internal static string CompletedLoad {
+            get {
+                return ResourceManager.GetString("CompletedLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Considering {0}.
         /// </summary>
         internal static string ConsideringType {
@@ -84,6 +93,15 @@ namespace Gather.Core {
         internal static string DisqualifiedBy {
             get {
                 return ResourceManager.GetString("DisqualifiedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exception when trying to load types. LoaderExceptions: {0}.
+        /// </summary>
+        internal static string ReflectionTypeLoadException {
+            get {
+                return ResourceManager.GetString("ReflectionTypeLoadException", resourceCulture);
             }
         }
         

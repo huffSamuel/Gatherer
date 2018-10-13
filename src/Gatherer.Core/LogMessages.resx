@@ -120,11 +120,17 @@
   <data name="Accepted" xml:space="preserve">
     <value>Accepted</value>
   </data>
+  <data name="CompletedLoad" xml:space="preserve">
+    <value>Completed load in {0}</value>
+  </data>
   <data name="ConsideringType" xml:space="preserve">
     <value>Considering {0}</value>
   </data>
   <data name="DisqualifiedBy" xml:space="preserve">
     <value>Disqualified by condition {0}</value>
+  </data>
+  <data name="ReflectionTypeLoadException" xml:space="preserve">
+    <value>Exception when trying to load types. LoaderExceptions: {0}</value>
   </data>
   <data name="UnableToLoadAssembly" xml:space="preserve">
     <value>Unable to load assembly {0}</value>

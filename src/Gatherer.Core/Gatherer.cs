@@ -8,60 +8,6 @@ using Gather.Attributes;
 
 namespace Gather.Core
 {
-    /// <summary>
-    /// The result of a gather
-    /// </summary>
-    public class Harvest
-    {
-        /// <summary>
-        /// The type that was gathered
-        /// </summary>
-        public Type GatheredType { get; }
-
-        /// <summary>
-        /// All the interfaces this type supports
-        /// </summary>
-        public IEnumerable<Type> SupportedInterfaces { get; }
-
-        internal Harvest(Type gatheredType, Type supportedInterface)
-        {
-            this.GatheredType = gatheredType;
-            this.SupportedInterfaces = new List<Type> { supportedInterface };
-        }
-
-        internal Harvest(Type gatheredType, IEnumerable<Type> supportedInterfaces)
-        {
-            this.GatheredType = gatheredType;
-            this.SupportedInterfaces = supportedInterfaces;
-        }
-    }
-
-    /// <summary>
-    /// A condition to check before gathering a type
-    /// </summary>
-    public class GatherCondition
-    {
-        /// <summary>
-        /// The conditional method for loading the type
-        /// </summary>
-        public Func<Type, bool> Condition { get; }
-
-        /// <summary>
-        /// The name of this condition
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// Condition constructor
-        /// </summary>
-        /// <param name="name">Name of this condition</param>
-        /// <param name="condition">Method to execute before gathering</param>
-        public GatherCondition(string name, Func<Type, bool> condition)
-        {
-            this.Condition = condition;
-            this.Name = name;
-        }
-    }
 
     /// <summary>
     /// Core gatherer for loading additional types from assemblies
@@ -74,32 +20,57 @@ namespace Gather.Core
         private Stopwatch stopwatch;
         Action<string> logMethod;
         IList<GatherCondition> conditions = new List<GatherCondition>();
-
+        private Action<ReflectionTypeLoadException> typeLoadHandler;
         private static GatherCondition GatheredCondition => new GatherCondition("Gathered", (x) => x.GetCustomAttribute<GatheredType>() != null);
 
-        private bool ImplementsLoaded(Type type)
-        {
-            return type.GetCustomAttribute<GatheredType>() != null;
-        }
-
+        /// <summary>
+        /// Constructs a new Gatherer
+        /// </summary>
         public Gatherer() : this(new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)))
         {
 
         }
 
+        /// <summary>
+        /// Constructs a new Gatherer
+        /// </summary>
+        /// <param name="directory">Directory that this gatherer should harvest.</param>
         public Gatherer(DirectoryInfo directory)
         {
-            this.directories = new List<DirectoryInfo>();
-            this.directories.Add(directory);
+            this.directories = new List<DirectoryInfo> { directory };
             logMethod = (x) => Debug.WriteLine(x);
             conditions.Add(GatheredCondition);
+            typeLoadHandler = (e) =>
+            {
+                Log(GetResourceString("ReflectionTypeLoadException", string.Join(", ", e.LoaderExceptions.Select(x => x.Message).ToList())));
+            };
         }
 
+        /// <summary>
+        /// Constructs a new Gatherer
+        /// </summary>
+        /// <param name="directories">List of directories this gatherer should harvest.</param>
         public Gatherer(IList<DirectoryInfo> directories)
         {
             this.directories = directories;
             logMethod = (x) => Debug.WriteLine(x);
             conditions.Add(GatheredCondition);
+            typeLoadHandler = (e) =>
+            {
+                Log(GetResourceString("ReflectionTypeLoadException", string.Join(", ", e.LoaderExceptions.Select(x => x.Message).ToList())));
+            };
+        }
+
+        /// <summary>
+        /// Sets a custom handler when ReflectionTypeLoadExceptions occur during assembly loading.
+        /// </summary>
+        /// <param name="handleAction">Action to perform when an exception occurs</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"/>
+        public Gatherer SetTypeLoadExceptionHandler(Action<ReflectionTypeLoadException> handleAction)
+        {
+            typeLoadHandler = handleAction ?? throw new ArgumentNullException(nameof(handleAction));
+            return this;
         }
 
         /// <summary>
@@ -107,8 +78,14 @@ namespace Gather.Core
         /// </summary>
         /// <param name="directory"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"/>
         public Gatherer From(DirectoryInfo directory)
         {
+            if(directory == null)
+            {
+                throw new ArgumentNullException(nameof(directory));
+            }
+
             directories.Add(directory);
             return this;
         }
@@ -118,8 +95,14 @@ namespace Gather.Core
         /// </summary>
         /// <param name="directories"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"/>
         public Gatherer From(IList<DirectoryInfo> directories)
         {
+            if(directories == null)
+            {
+                throw new ArgumentNullException(nameof(directories));
+            }
+
             for (int i = 0; i < directories.Count; ++i)
             {
                 this.directories.Add(directories[i]);
@@ -133,6 +116,7 @@ namespace Gather.Core
         /// </summary>
         /// <param name="logAction"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"/>
         public Gatherer WithLogger(Action<string> logAction)
         {
             logMethod = logAction ?? throw new ArgumentNullException(nameof(logAction));
@@ -164,8 +148,14 @@ namespace Gather.Core
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"/>
         public Gatherer WithCondition(GatherCondition condition)
         {
+            if(condition == null)
+            {
+                throw new ArgumentNullException(nameof(condition));
+            }
+
             conditions.Add(condition);
             return this;
         }
@@ -175,8 +165,14 @@ namespace Gather.Core
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"/>
         public Gatherer WithoutCondition(GatherCondition condition)
         {
+            if(condition == null)
+            {
+                throw new ArgumentNullException(nameof(condition));
+            }
+
             if(conditions.Contains(condition))
             {
                 conditions.Remove(condition);
@@ -255,7 +251,7 @@ namespace Gather.Core
             if (diagnosticTiming)
             {
                 stopwatch.Stop();
-                Log("Completed load in " + stopwatch.Elapsed);
+                Log(GetResourceString("CompletedLoad", stopwatch.Elapsed.ToString()));
             }
         }
 
@@ -294,11 +290,7 @@ namespace Gather.Core
                 }
                 catch(ReflectionTypeLoadException typeLoadException)
                 {
-                    Log("Type load error: " + string.Join(", ", typeLoadException.LoaderExceptions.ToList()));
-                }
-                catch(Exception exc)
-                {
-                    Log("Uhandled exception when loading: " + exc.Message);
+                    typeLoadHandler?.Invoke(typeLoadException);
                 }
             }
 
