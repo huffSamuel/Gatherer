@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Gather.Core</RootNamespace>
     <AssemblyName>Gather.Core</AssemblyName>
+    <Version>1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
