@@ -8,10 +8,10 @@ of your choice.
 ## Installation
 
 *Package Manager*
-```Install-Package Gatherer -Version 1.0.0```
+```Install-Package Gatherer -Version 1.1.1```
 
 *dotnet CLI*
-```dotnet add package Gatherer --version 1.0.0```
+```dotnet add package Gatherer --version 1.1.1```
 
 ## Example Usage
 
