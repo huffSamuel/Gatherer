@@ -1,4 +1,4 @@
-# Gatherer
+﻿# Gatherer
 [![Build status](https://ci.appveyor.com/api/projects/status/8h5rc4542l0ehf8l?svg=true)](https://ci.appveyor.com/project/huffSamuel/gatherer)
 [![Nuget](https://img.shields.io/nuget/v/Gatherer.svg)](https://www.nuget.org/packages/Gatherer/)  
 Gatherer is a lightweight plugin loading framework for .NET Standard. Unopinionated and unbiased, this framework
@@ -24,7 +24,12 @@ var harvested = gatherer.LoadAll();
 Gatherer also offers a number of fluent methods for customizing the way Gatherer loads plugins.
 
 ## Change Log
-- Initial release
+
+### Version 1.1
++ Catch ReflectionTypeLoadExceptions when loading assemblies. No more manually handling.
+
+### Version 1.0
++ Initial release ¯\_(ツ)_/¯
 
 ## Contributions
 Contributions are always welcome! For minor changes simply submit a pull request. For major changes
