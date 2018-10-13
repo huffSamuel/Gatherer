@@ -265,29 +265,40 @@ namespace Gather.Core
 
             for (int i = 0; i < assemblies.Count; ++i)
             {
-                var candidateTypes = assemblies[i].GetTypes();
-
-                foreach (var candidateType in candidateTypes)
+                try
                 {
-                    Log(GetResourceString("ConsideringType", candidateType.Name), true);
+                    var candidateTypes = assemblies[i].GetTypes();
 
-                    bool isValid = true;
-                    int j = 0;
-                    for (/**/; j < conditions.Count && isValid; ++j)
+                    foreach (var candidateType in candidateTypes)
                     {
-                        if(!conditions[j].Condition.Invoke(candidateType))
+                        Log(GetResourceString("ConsideringType", candidateType.Name), true);
+
+                        bool isValid = true;
+                        int j = 0;
+                        for (/**/; j < conditions.Count && isValid; ++j)
                         {
-                            Log(GetResourceString("DisqualifiedBy", conditions[j].Name), true);
-                            isValid = false;
-                            break;
+                            if (!conditions[j].Condition.Invoke(candidateType))
+                            {
+                                Log(GetResourceString("DisqualifiedBy", conditions[j].Name), true);
+                                isValid = false;
+                                break;
+                            }
+                        }
+
+                        if (isValid)
+                        {
+                            Log(GetResourceString("Accepted"), true);
+                            types.Add(candidateType);
                         }
                     }
-
-                    if (isValid)
-                    {
-                        Log(GetResourceString("Accepted"), true);
-                        types.Add(candidateType);
-                    }
+                }
+                catch(ReflectionTypeLoadException typeLoadException)
+                {
+                    Log("Type load error: " + string.Join(", ", typeLoadException.LoaderExceptions.ToList()));
+                }
+                catch(Exception exc)
+                {
+                    Log("Uhandled exception when loading: " + exc.Message);
                 }
             }
 
